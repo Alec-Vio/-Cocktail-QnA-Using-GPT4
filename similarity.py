@@ -51,8 +51,10 @@ class Similarity(AbstractFunction):
 
             distance_np = faiss.pairwise_distances(open_feat_np, base_feat_np)
 
+            print(self._get_distance(distance_np))
             return self._get_distance(distance_np)
 
         ret = pd.DataFrame()
         ret["distance"] = df.apply(_similarity, axis=1)
+        print(ret)
         return ret
