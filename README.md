@@ -19,10 +19,27 @@ This function takes in the context from the similarity function run and combines
 This function is for when it is confirmed that the context and the question are relevant to one another and that there is a solid answer to the question available. The function creates a query with the context, the question, and a message informing the LLM on how to answer the question using the context. The LLM receives the query and gives an answer of one of the recipes. The terminal user is then prompted to say whether they want to ask any follow-up questions and if it receives a yes, a prompt to ask a question of the LLM. If it is asked a follow-up question, it will use the name of the cocktail it recommended as context and then answer the question with that cocktail in mind. It will continue to ask for follow-up questions until it receives something other than a no. At that point, it will ask if you want to ask about more cocktails, and if it receives a yes it sends you back to ask_question.
 
 ### remake_question
-This function takes in the original question and, using an LLM creates a new question to be used by the similarity function to hopefully have more success in retrieving recipes relevant to the original question.
+This function takes in the original question and, using an LLM creates a new question to be used by the similarity function to hopefully have more success in retrieving recipes relevant to the original question. It then calls the ask_question function using the generated question.
 
 ### invent_recipe
 This function takes in the original question and, using an LLM invents a completely new cocktail recipe according to the description of the question. Once it creates a recipe, it will ask if the user wants it to be added to the database, and if the user says yes, it will format the recipe correctly for the data file and add it to the back of the file.
+
+### Basic run-through
+1. Setup context
+2. Ask the user for a question
+3. Find relevant recipes for the question using a similarity function
+4. Check quality of the recipes in relation to the question
+5. The recipes are irrelevant
+   a. Create a new question and take that back to step 3
+   b. ...or if the question has already been made
+       1. Invent a recipe based on the original question
+       2. Ask the user if the recipe should be added to the database
+       3. If yes, format and add the question to the database
+6. Get the LLM to generate the best recipe from the context for the question
+7. Ask the user if they want a follow-up question about the recipe
+8. If yes, continue to answer follow-up questions based on the recommended recipe
+9. Ask the user if they want to ask another question for a recipe
+10. If yes, return to step 2
 
 ## Setup
 Ensure that the local Python version is >= 3.8. Install the required libraries:
@@ -31,6 +48,7 @@ Ensure that the local Python version is >= 3.8. Install the required libraries:
 pip install -r requirements.txt
 ```
 
+## Examples
 ### How to Run
 ```bash
 python evadb_qa.py
