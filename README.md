@@ -29,12 +29,12 @@ This function takes in the original question and, using an LLM invents a complet
 2. Ask the user for a question
 3. Find relevant recipes for the question using a similarity function
 4. Check quality of the recipes in relation to the question
-5. The recipes are irrelevant
-   a. Create a new question and take that back to step 3
-   b. ...or if the question has already been made
-       1. Invent a recipe based on the original question
-       2. Ask the user if the recipe should be added to the database
-       3. If yes, format and add the question to the database
+5. The recipes are irrelevant\n
+   - Create a new question and take that back to step 3
+   -  ...or if the question has already been made
+      - Invent a recipe based on the original question
+      - Ask the user if the recipe should be added to the database
+      - If yes, format and add the question to the database
 6. Get the LLM to generate the best recipe from the context for the question
 7. Ask the user if they want a follow-up question about the recipe
 8. If yes, continue to answer follow-up questions based on the recommended recipe
@@ -48,10 +48,104 @@ Ensure that the local Python version is >= 3.8. Install the required libraries:
 pip install -r requirements.txt
 ```
 
-## Examples
 ### How to Run
 ```bash
 python evadb_qa.py
 ```
 
-## 
+## Examples
+Here are some runs of the program. The format will be all the terminals from the run of the program copied and pasted here. Anytime there is a question or a prompt and then writing afterward, that is the program prompting for terminal input and then the writing afterward is the input given by me, the user.
+
+### Example One
+In this one, all functions are utilized. First, the question makes it all the way to the llm_qna and answers a follow-up question well. Then, when another cocktail question is asked, the context creation is not good enough and the question is remade, which also creates a failed context and a recipe is invented and added to the database.
+```
+Setup Function
+Time: 2382.279 ms
+Create table
+Time: 3638.737 ms
+Extract features
+Time: 2092.325 ms
+Create index
+Time: 1148.241 ms
+Ask Question
+Please enter your question: Recommend me a strong drink
+You asked: Recommend me a strong drink
+Query
+Time: 2139.010 ms
+Considering Quality
+Time: 597.564 ms
+Getting Your Results
+White Lady: 2 oz gin: 12 oz Cointreau: 12 oz lemon juice: shake all ingredients with ice, strain into a cocktail glass
+; White Lady is a strong drink that contains 24 oz of alcohol with only 12 oz of mixers and no additional liquid ingredients.
+Time: 887.903 ms
+
+
+Do you have any followup questions about this drink? (YES/NO): Yes
+What's your question?: can I substitute the gin for something?
+
+Yes, you can substitute the gin with vodka or even a white tequila. Some people also like to use triple sec or Cointreau as a gin alternative in a White Lady cocktail.
+
+Do you have any followup questions about this drink? (YES/NO): no
+Do you want to ask another question? (YES/NO): yes
+Ask Question
+Please enter your question: recommend me another strong drink
+You asked: recommend me another strong drink
+Query
+Time: 2252.826 ms
+Considering Quality
+Time: 444.985 ms
+Remaking Question
+The new question is: "Recommend me a vodka-based drink with pineapple juice and coconut rum."
+Time: 511.932 ms
+Ask Question
+Query
+Time: 2611.810 ms
+Considering Quality
+Time: 215.327 ms
+Inventing a Recipe
+
+Spiced Moscow Mule: 2oz vodka: 1oz lime juice: 1oz honey syrup: 2oz ginger beer: dash of bitters: garnish with lime wedges and fresh rosemary: in a mule mug, muddle lime wedges with honey syrup and bitters, add vodka and lime juice, fill with ice, top with ginger beer, stir and garnish.
+
+This cocktail would be a great recommendation for the user as it has a mix of strong and refreshing flavors. The combination of vodka, lime juice, and ginger beer creates a balanced and tangy base, while the addition of honey syrup and bitters adds a touch of sweetness and depth. The lime wedges and rosemary not only add a pop of color but also enhance the aroma of the drink. Overall, the Spiced Moscow Mule is a perfect blend of strong and flavorful ingredients, making it a great choice for those looking for a strong drink.
+Do you want to add this recipe to the database? (YES/NO): yes
+Recipe added to the database.
+Time: 44252.736 ms
+```
+
+## Example 2
+In this example, the remaking of a question has to happen and is successful in creating a good context, which is then used in the llm_qna.
+```
+Setup Function
+Time: 2269.072 ms
+Create table
+Time: 3398.215 ms
+Extract features
+Time: 2025.123 ms
+Create index
+Time: 1104.044 ms
+Ask Question
+Please enter your question: recommend me a weird cocktail
+You asked: recommend me a weird cocktail
+Query
+Time: 2777.263 ms
+Considering Quality
+Time: 323.408 ms
+Remaking Question
+The new question is:  "Weird cocktail with gin and citrus."
+Time: 378.330 ms
+Ask Question
+Query
+Time: 2682.286 ms
+Considering Quality
+Time: 225.926 ms
+Getting Your Results
+Electric Kool-Aid: 1.5oz vodka: 1oz blue curacao: 1.5oz cranberry juice: 1oz lime juice: assemble in a highball glass filled with ice and stir 
+
+This cocktail has a bright blue color similar to Kool-Aid, giving it a playful and fun appearance. The combination of vodka, blue curacao, cranberry juice, and lime juice creates a unique and refreshing flavor that is sure to surprise the taste buds. The name "Electric Kool-Aid" also adds to the overall quirkiness and weirdness of this cocktail, making it a perfect choice for someone looking for an unconventional drink experience.
+Time: 918.612 ms
+
+
+Do you have any followup questions about this drink? (YES/NO): no
+Do you want to ask another question? (YES/NO): no
+Time: 15430.556 ms
+```
