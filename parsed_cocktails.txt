@@ -16,6 +16,7 @@ Cuba Libre: 2oz light rum: lime juice: cola: Fill a highball glass with ice, add
 Daiquiri: 2oz light rum: 1oz lime juice: 0.5oz simple syrup: Shake ingredients with ice, strain into a chilled cocktail glass.
 Dark N Stormy: 2oz dark rum: ginger beer: Fill a highball glass with ice, add rum and top with ginger beer, garnish with a lime wedge.
 Dirty Martini: 2.5oz gin or vodka: 0.5oz dry vermouth: 0.5oz olive brine: Stir ingredients with ice, strain into a chilled martini glass, garnish with olives.
+Electric KoolAid: 1.5oz vodka: 1oz blue curacao: 1.5oz cranberry juice: 1oz lime juice: assemble in a highball glass filled with ice and stir 
 Espresso Martini: 2oz vodka: 0.5oz coffee liqueur: 1 shot of espresso: 0.5oz simple syrup: Shake all ingredients with ice, strain into a chilled martini glass.
 French 75: 2oz gin: 0.5oz lemon juice: 0.5oz simple syrup: 3oz champagne: Shake gin, lemon juice, and syrup with ice, strain into a flute, top with champagne.
 Gimlet: 2.5oz gin: 0.5oz lime juice: 0.5oz simple syrup: Shake ingredients with ice, strain into a chilled cocktail glass.
@@ -98,3 +99,4 @@ Zinger: 2 oz vodka: 12 oz triple sec: 12 oz lemon juice: 12 oz lime juice: splas
 Zig Zag: 1 12 oz bourbon: 34 oz sweet vermouth: 14 oz Fernet Branca: stir all ingredients with ice, strain into a chilled cocktail glass
 Zombie: 1 oz light rum: 1 oz dark rum: 1 oz apricot brandy: 1 oz lime juice: 1 oz pineapple juice: 1 oz papaya juice: 12 oz 151proof rum: mix all ingredients except 151proof rum in a shaker with ice, pour into a highball glass, float 151proof rum on top
 Zurich: 2 oz gin: 12 oz dry vermouth: 12 oz Kirsch: lemon twist: stir all ingredients with ice, strain into a chilled cocktail glass, garnish with lemon twist
+Spiced Moscow Mule: 2oz vodka: 1oz lime juice: 1oz honey syrup: 2oz ginger beer: dash of bitters: garnish with lime wedges and fresh rosemary: in a mule mug, muddle lime wedges with honey syrup and bitters, add vodka and lime juice, fill with ice, top with ginger beer, stir and garnish.

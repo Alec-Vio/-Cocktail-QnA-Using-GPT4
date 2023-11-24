@@ -1,7 +1,6 @@
 import os
 from time import perf_counter
 
-from gpt4all import GPT4All
 from unidecode import unidecode
 from util import download_cocktails, read_parsed_cocktails, process_cocktails
 from openai import OpenAI
@@ -86,7 +85,6 @@ def setup_context(cocktails_path: str):
     timestamps[t_i] = perf_counter()
     print(f"Time: {(timestamps[t_i] - timestamps[t_i - 1]) * 1000:.3f} ms")
     
-    print("Query")
     ask_question("", "", cursor, cocktail_feat_table, client)
 
 def ask_question(question, orig_quesiton, cursor, cocktail_feat_table, client):
@@ -100,7 +98,8 @@ def ask_question(question, orig_quesiton, cursor, cocktail_feat_table, client):
         orig_quesiton = question
         print(f"You asked: {question}")
         hasRemade = False
-
+    print("Query")
+    t_i = perf_counter()
     # Make the question compatable with similarity
     ascii_question = unidecode(question)
     ascii_question = ascii_question.replace("'", "''")
@@ -115,25 +114,23 @@ def ask_question(question, orig_quesiton, cursor, cocktail_feat_table, client):
         ORDER BY Similarity(SentenceFeatureExtractor('{ascii_question}'),features)
         LIMIT 10;"""
     ).execute()
-    # res_batch = cursor.query(
-    #     f"""SELECT data FROM {cocktail_feat_table}
-    #     ORDER BY Similarity(SentenceFeatureExtractor('{ascii_question}'),features)
-    #     LIMIT 5;"""
-    # ).execute()
 
     context_list = []
     context_list.append("Context:\n")
     if (len(res_batch ) == 0 and not hasRemade):
-        remakeQuestion(question, client, cursor, cocktail_feat_table)
+        remake_question(question, client, cursor, cocktail_feat_table)
         
 
     for i in range(len(res_batch)):
         context_list.append(res_batch.frames[f"{cocktail_feat_table.lower()}.data"][i])
 
-    considerContextQuality(context_list, question, orig_quesiton, client, hasRemade, cursor, cocktail_feat_table)
+    print(f"Time: {(perf_counter() - t_i) * 1000:.3f} ms")
 
-def inventRecipe(question, client, cursor, cocktail_feat_table):
+    consider_context_quality(context_list, question, orig_quesiton, client, hasRemade, cursor, cocktail_feat_table)
+
+def invent_recipe(question, client, cursor, cocktail_feat_table):
     print("Inventing a Recipe")
+    t_i = perf_counter()
     query = ["\nQuestion:\n" + question + "\n"]
     query.append("The above question is a user trying to find a good recipe for a cocktail based on what they feel like drinking at the moment."
                  + "\nPlease invent a cocktail that would match what the user is trying to get based on their question."
@@ -164,14 +161,18 @@ def inventRecipe(question, client, cursor, cocktail_feat_table):
         with open("cocktails_list.txt", "a") as file:
             file.write(filtered_recipe + "\n")
         print("Recipe added to the database.")
+        print(f"Time: {(perf_counter() - t_i) * 1000:.3f} ms")
     else:
         question = input("Do you want to ask another question? (YES/NO): ")
         if question.lower() == "yes":
+            print(f"Time: {(perf_counter() - t_i) * 1000:.3f} ms")
             ask_question("", "", cursor, cocktail_feat_table, client)
+    print(f"Time: {(perf_counter() - t_i) * 1000:.3f} ms")
     return True
 
-def remakeQuestion(question, client, cursor, cocktail_feat_table):
+def remake_question(question, client, cursor, cocktail_feat_table):
     print("Remaking Question")
+    t_i = perf_counter()
     query = ["\nQuestion:\n" + question + "\n"]
     query.append("The above question is a user trying to find a good recipe for a cocktail based on what they feel like drinking at the moment."
                  + "\nThe way the question is used is that it is put into a similarity function that compares it to a vectorized database of cocktail"
@@ -194,12 +195,13 @@ def remakeQuestion(question, client, cursor, cocktail_feat_table):
     )
     print("The new question is: ", full_response.choices[0].text.strip())
 
+    print(f"Time: {(perf_counter() - t_i) * 1000:.3f} ms")
     ask_question(full_response.choices[0].text.strip(), question, cursor, cocktail_feat_table, client)
     return True
 
-def considerContextQuality(context, question, orig_quesiton, client, hasRemade, cursor, cocktail_feat_table):
+def consider_context_quality(context, question, orig_quesiton, client, hasRemade, cursor, cocktail_feat_table):
     print("Considering Quality")
-    # context.append("\nQuestion:\n" + question + "\n")
+    t_i = perf_counter()
     query = []
     query.append("Below is a context filled with cocktail recipes from a database and a question"
                    + "\nThe recipes are in the format of title, then list of ingredients, then instructions, all colon seperated."
@@ -219,15 +221,20 @@ def considerContextQuality(context, question, orig_quesiton, client, hasRemade, 
         max_tokens=500
     )
     if full_response.choices[0].text.strip().lower() =="yes":
+        print(f"Time: {(perf_counter() - t_i) * 1000:.3f} ms")
         llm_qna(context, orig_quesiton, client, cursor, cocktail_feat_table)
     elif (hasRemade):
-        inventRecipe(orig_quesiton, client, cursor, cocktail_feat_table)
+        print(f"Time: {(perf_counter() - t_i) * 1000:.3f} ms")
+        invent_recipe(orig_quesiton, client, cursor, cocktail_feat_table)
     else:
-        remakeQuestion(question, client, cursor, cocktail_feat_table)
+        print(f"Time: {(perf_counter() - t_i) * 1000:.3f} ms")
+        remake_question(question, client, cursor, cocktail_feat_table)
+    print(f"Time: {(perf_counter() - t_i) * 1000:.3f} ms")
     return True
 
 def llm_qna(context, question, client, cursor, cocktail_feat_table):
     print("Getting Your Results")
+    t_i = perf_counter()
     query = []
     query.append("The above context is a list of cocktail recipes taken from a larger database of recipes."
                    + "\nThe recipes are in the format of title, then list of ingredients, then instructions, all colon seperated."
@@ -247,6 +254,7 @@ def llm_qna(context, question, client, cursor, cocktail_feat_table):
         max_tokens=500
     )
     print(full_response.choices[0].text.strip())
+    print(f"Time: {(perf_counter() - t_i) * 1000:.3f} ms")
 
     followup = input("\n\nDo you have any followup questions about this drink? (YES/NO): ")
     while followup.lower() == "yes":
