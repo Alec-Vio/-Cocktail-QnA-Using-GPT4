@@ -1,5 +1,5 @@
 evadb==0.3.7
-gpt4all
+openai
 unidecode
 numpy
 pandas
